@@ -25,11 +25,15 @@ def add_time(start, duration):
     sum_minutes = s_minutes + d_minutes
 
     days = 0
+    if sum_minutes > MINUTES_DAY:
+        days = int((sum_minutes / MINUTES_DAY))
+        #print ("days: ", days)
     new_time = ""
 
     # Display new time if it is still the same day
-    if sum_minutes < 1440: 
-        if sum_minutes < 1440/2:
+    if days==0: 
+        if sum_minutes < MINUTES_DAY/2:
+            print(daytime)
             daytime = "AM"
             if sum_minutes%60 != 0:
                 new_hours = int((sum_minutes - (sum_minutes % 60)) / 60)
@@ -44,11 +48,16 @@ def add_time(start, duration):
                 new_time = str(new_hours) + ":" + str(new_minutes) + " " + daytime
         else:
             daytime = "PM"
+            #print(daytime)
             if sum_minutes%60 != 0:
                 new_hours = int((sum_minutes - (sum_minutes % 60)) / 60)-12
+                if new_hours == 0: #display 12 pm instead of reverting to 0
+                    new_hours +=12
                 new_minutes = sum_minutes % 60
             else:
                 new_hours = int(sum_minutes / 60)-12
+                if new_hours == 0: #display 12 pm instead of reverting to 0
+                    new_hours +=12
                 new_minutes = 0
             
             # keep the double digit format if minutes are less than 10
@@ -56,9 +65,57 @@ def add_time(start, duration):
                 new_time = str(new_hours) + ":" + "0" + str(new_minutes) + " " + daytime
             else:
                 new_time = str(new_hours) + ":" + str(new_minutes) + " " + daytime
+        return new_time
+    
+    # Display the time if the new time is on the next day or more
     else: 
-        return "next day"
+        rem_minutes = sum_minutes % MINUTES_DAY
+        # print("rem_minutes: ", str(rem_minutes))
+        if rem_minutes <=(MINUTES_DAY/2):
+            daytime = "AM"
+            if rem_minutes % 60 != 0:
+                new_hours = int((rem_minutes - (rem_minutes % 60)) / 60)
+                new_minutes = rem_minutes % 60
+                # print ("new_minutes: ", new_minutes, type(new_minutes))
+            else:
+                new_hours = int(rem_minutes / 60)
+                new_minutes = 0
+                
+            if new_minutes < 10:
+                new_time = str(new_hours) + ":" + "0" + str(new_minutes) + " " + daytime
+            else:
+                new_time = str(new_hours) + ":" + str(new_minutes) + " " + daytime
 
-    return new_time
+            # print ("new time: ", new_time)
 
-print(add_time("12:00 AM", "11:50"))
+        else:
+            daytime = "PM"
+            if rem_minutes % 60 != 0:
+                new_hours = int((rem_minutes - (rem_minutes % 60)) / 60)-12
+                if new_hours == 0: #display 12 pm instead of reverting to 0
+                    new_hours +=12
+                new_minutes = rem_minutes % 60
+            else:
+                new_hours = int(rem_minutes / 60)-12
+                if new_hours == 0: #display 12 pm instead of reverting to 0
+                    new_hours +=12
+                new_minutes = 0
+            
+            # keep the double digit format if minutes are less than 10
+            if new_minutes< 10:
+                new_time = str(new_hours) + ":" + "0" + str(new_minutes) + " " + daytime
+            else:
+                new_time = str(new_hours) + ":" + str(new_minutes) + " " + daytime
+        
+        if days < 2:
+            return new_time + " (next day)"
+
+        else:
+            return new_time + " (" + str(days) + " days later)"
+
+    
+
+print(add_time("3:00 PM", "3:10"))
+print(add_time("11:43 AM", "00:20"))
+print(add_time("10:10 PM", "3:30"))
+print(add_time("6:30 PM", "205:12"))
